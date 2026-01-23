@@ -4,6 +4,7 @@ using VDS.RDF.Nodes;
 using VDS.RDF.Parsing;
 using VDS.RDF.Query.Algebra;
 using VDS.RDF.Query.Pull;
+using Uri = VDS.RDF.Uri;
 
 namespace dotNetRdf.Query.Pull.Tests;
 

@@ -1,6 +1,7 @@
 ﻿using dotNetRdf.TestSuite.Rdfa;
 using System.Linq;
 using VDS.RDF;
+using Uri = VDS.RDF.Uri;
 
 namespace dotNetRdf.TestSupport;
 

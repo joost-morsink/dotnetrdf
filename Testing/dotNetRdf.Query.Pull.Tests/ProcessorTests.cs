@@ -3,6 +3,7 @@ using VDS.RDF.Parsing;
 using VDS.RDF.Parsing.Handlers;
 using VDS.RDF.Query;
 using VDS.RDF.Query.Pull;
+using Uri = VDS.RDF.Uri;
 
 namespace dotNetRdf.Query.Pull.Tests;
 

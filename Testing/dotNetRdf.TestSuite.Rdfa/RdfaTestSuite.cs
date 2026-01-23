@@ -2,6 +2,7 @@ using dotNetRdf.TestSupport;
 using VDS.RDF;
 using VDS.RDF.Parsing;
 using VDS.RDF.Query;
+using Uri = VDS.RDF.Uri;
 
 namespace dotNetRdf.TestSuite.Rdfa;
 
