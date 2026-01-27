@@ -23,7 +23,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using System;
+using FluentAssertions;
 using Xunit;
 
 namespace VDS.RDF;
@@ -43,5 +43,57 @@ public class UriTests
     {
         var u = new Uri("http://example.org/#test");
         Assert.Equal("http://example.org/#test", u.AbsoluteUri);
+    }
+
+    [Theory]
+    [InlineData("http://example.org/path?query=value", "http", "example.org", "", "example.org", "", "/path", "?query=value")]
+    [InlineData("http://example.org/path#fragment", "http", "example.org", "", "example.org", "", "/path", "", "#fragment")]
+    [InlineData("http://example.org/path?query=value#fragment", "http", "example.org", "", "example.org", "", "/path", "?query=value", "#fragment")]
+    [InlineData("http://example.org:8080", "http", "example.org:8080", "","example.org", "8080")]
+    [InlineData("http://example.org:8080/", "http", "example.org:8080", "","example.org", "8080","/")]
+    [InlineData("http://usr:pwd@example.org:8080", "http", "usr:pwd@example.org:8080", "usr:pwd","example.org", "8080")]
+    [InlineData("urn:example:abc:123", "urn", "", "", "", "", "example:abc:123")]
+    [InlineData("urn:example:abc?query=value", "urn", "", "", "", "", "example:abc", "?query=value", "")]
+    [InlineData("urn:example:abc#fragment", "urn", "", "", "", "", "example:abc", "", "#fragment")]
+    [InlineData("urn:example:abc:123?query=value#fragment", "urn", "", "", "", "", "example:abc:123", "?query=value", "#fragment")]
+    [InlineData("urn:example:path/to/resource", "urn", "", "", "", "", "example:path/to/resource", "", "")]
+    public void CanParseAbsoluteUri(string uri, string scheme, string authority, string userInfo, string host, string port="", string path="", string query="", string fragment="")
+    {
+        var u = Uri.REGEX_URI.Match(uri);
+        u.Success.Should().BeTrue();
+        u.Groups["Scheme"].Value.Should().Be(scheme);
+        u.Groups["Authority"].Value.Should().Be(authority);
+        u.Groups["UserInfo"].Value.Should().Be(userInfo);
+        u.Groups["Host"].Value.Should().Be(host);
+        u.Groups["Port"].Value.Should().Be(port);
+        u.Groups["Path"].Value.Should().Be(path);
+        u.Groups["Query"].Value.Should().Be(query);
+        u.Groups["Fragment"].Value.Should().Be(fragment);
+    }
+
+    [Theory]
+    [InlineData("abc/def/", "", "", "", "", "abc/def/", "", "")]
+    [InlineData("//example.org/abc/def", "example.org", "", "example.org", "", "/abc/def", "", "")]
+    [InlineData("//example.org", "example.org", "", "example.org", "", "", "", "")]
+    [InlineData("//example.org/", "example.org", "", "example.org", "", "/", "", "")]
+    [InlineData("//example.org:8080/abc/def", "example.org:8080", "", "example.org", "8080", "/abc/def", "", "")]
+    [InlineData("/abc/def", "", "", "", "", "/abc/def", "", "")]
+    [InlineData("abc/def?query=value", "", "", "", "", "abc/def", "?query=value", "")]
+    [InlineData("?query=value", "", "", "", "", "", "?query=value", "")]
+    [InlineData("?query=value#fragment", "", "", "", "", "", "?query=value", "#fragment")]
+    [InlineData("#fragment", "", "", "", "", "", "", "#fragment")]
+    [InlineData("//usr:pwd@example.org:8080/abc/def?query=value#fragment", "usr:pwd@example.org:8080", "usr:pwd", "example.org", "8080", "/abc/def", "?query=value", "#fragment")]
+    public void CanParseRelativeUri(string uri, string authority, string userInfo, string host, string port = "", string path = "", string query = "",
+        string fragment = "")
+    {
+        var u = Uri.REGEX_RELATIVE_URI.Match(uri);
+        u.Success.Should().BeTrue();
+        u.Groups["Authority"].Value.Should().Be(authority);
+        u.Groups["UserInfo"].Value.Should().Be(userInfo);
+        u.Groups["Host"].Value.Should().Be(host);
+        u.Groups["Port"].Value.Should().Be(port);
+        u.Groups["Path"].Value.Should().Be(path);
+        u.Groups["Query"].Value.Should().Be(query);
+        u.Groups["Fragment"].Value.Should().Be(fragment);
     }
 }
