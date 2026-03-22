@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace VDS.RDF;
 
@@ -35,12 +36,9 @@ public partial class Uri
     public System.Uri inner => _inner ?? CreateUri();
 
     private System.Uri CreateUri()
-        => new System.Uri(ToString());
-
-    public void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        ((ISerializable) inner).GetObjectData(info, context);
-    }
+        => _isAbsolute
+            ? new System.Uri(string.Concat(_baseUri, _leaf, _query, _fragment), UriKind.Absolute)
+            : new System.Uri(string.Concat(_baseUri, _leaf, _query, _fragment), UriKind.Relative);
 
     public string GetComponents(UriComponents components, UriFormat format)
     {
@@ -72,7 +70,7 @@ public partial class Uri
         return inner.MakeRelativeUri(uri);
     }
 
-    public string AbsolutePath => inner.AbsolutePath;
+    public string AbsolutePath => $"{_uriMatch.Path}{_leaf}";
 
     public string AbsoluteUri => inner.AbsoluteUri;
 
