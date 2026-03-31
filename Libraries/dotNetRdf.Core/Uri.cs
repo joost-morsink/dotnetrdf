@@ -36,9 +36,9 @@ public partial class Uri
     public System.Uri inner => _inner ?? CreateUri();
 
     private System.Uri CreateUri()
-        => _isAbsolute
-            ? new System.Uri(string.Concat(_baseUri, _leaf, _query, _fragment), UriKind.Absolute)
-            : new System.Uri(string.Concat(_baseUri, _leaf, _query, _fragment), UriKind.Relative);
+        => _base.IsAbsoluteUri
+            ? new System.Uri(string.Concat(_base, _leaf, _query, _fragment), UriKind.Absolute)
+            : new System.Uri(string.Concat(_base, _leaf, _query, _fragment), UriKind.Relative);
 
     public string GetComponents(UriComponents components, UriFormat format)
     {
@@ -141,13 +141,6 @@ public partial class Uri
 
     public override string ToString()
         => inner.ToString();
-
-    public static implicit operator System.Uri(Uri uri)
-        => uri.inner;
-
-    public static implicit operator Uri(System.Uri inner)
-        => new(inner);
-
     
     public static string EscapeUriString(string value) => System.Uri.EscapeUriString(value);
     public static string EscapeDataString(string value) => System.Uri.EscapeDataString(value);

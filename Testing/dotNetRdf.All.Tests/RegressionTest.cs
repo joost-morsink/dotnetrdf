@@ -42,7 +42,7 @@ public class RegressionTest
             where t != typeof(VDS.RDF.Uri)
             from m in t.GetMembers()
             from reft in RefTypes(m)
-            where reft == typeof(System.Uri)
+            where reft == typeof(System.Uri) || reft.IsGenericType && reft.GetGenericArguments().Any(t => t == typeof(System.Uri))
             select $"{t.Namespace}.{t.Name}.{m.Name}";
 
         uris.Should().HaveCount(0);
